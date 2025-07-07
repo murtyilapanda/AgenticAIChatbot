@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "AgenticAIChatbot": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7267"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "containerRunArguments": "--init",
+      "httpPort": 32830,
+      "useSSL": false
+    }
+  }
+}
