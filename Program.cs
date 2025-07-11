@@ -36,6 +36,12 @@ var host = new HostBuilder()
         services.AddSingleton(sp => cosmosClient.GetContainer(db, container));
         services.AddSingleton(kernel);
         services.AddSingleton<RiskAssessment>();
+        services.AddHttpClient<ShipmentQueryService>();
+        services.AddSingleton<SLAQueryService>();
+        services.AddHttpClient();
+        services.AddSingleton<SlaPredictionPlugin>();
+        services.AddHttpClient<CosmosDbPlugin>();
+        services.AddSingleton<CosmosDbPlugin>();
 
 
     })

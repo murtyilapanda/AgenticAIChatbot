@@ -39,6 +39,28 @@ namespace AgenticAIChatbot
 
             return queryDef;
         }
+
+        /// <summary>
+        /// Builds a raw SQL query string by inlining actual values into the WHERE clause.
+        /// Use this when calling an external API that accepts SQL-like queries.
+        /// </summary>
+        public static string BuildSqlQuery(Dictionary<string, string> filters, bool useAnd = true)
+        {
+            string baseSql = "SELECT * FROM c";
+
+            if (filters == null || !filters.Any())
+                return baseSql;
+
+            var conditions = filters.Select(kvp =>
+            {
+                // Escape single quotes for safety
+                string safeValue = kvp.Value.Replace("'", "''");
+                return $"c.{kvp.Key} = '{safeValue}'";
+            });
+
+            string joiner = useAnd ? " AND " : " OR ";
+            return baseSql + " WHERE " + string.Join(joiner, conditions);
+        }
     }
 
 }
