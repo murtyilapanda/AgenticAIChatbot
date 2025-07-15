@@ -53,14 +53,15 @@ namespace AgenticAIChatbot
 
             var conditions = filters.Select(kvp =>
             {
-                // Escape single quotes for safety
-                string safeValue = kvp.Value.Replace("'", "''");
-                return $"c.{kvp.Key} = '{safeValue}'";
+                string column = kvp.Key;
+                string value = kvp.Value.ToUpperInvariant().Replace("'", "''"); // Ensure value is uppercase and safe
+                return $"UPPER(c.{column}) = '{value}'";
             });
 
             string joiner = useAnd ? " AND " : " OR ";
             return baseSql + " WHERE " + string.Join(joiner, conditions);
         }
+
     }
 
 }

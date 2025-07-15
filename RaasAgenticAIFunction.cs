@@ -161,8 +161,6 @@ namespace AgenticAIChatbot
 
                             var riskSummary = await _riskAssessment.GenerateRiskSummaryAsync(shipments);
 
-                            _logger.LogInformation("Risk summary: {RiskSummary}", JsonConvert.SerializeObject(riskSummary, Formatting.Indented));
-
                             return new OkObjectResult(new
                             {
                                 message = riskSummary

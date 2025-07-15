@@ -10,7 +10,7 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("local.settings.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 

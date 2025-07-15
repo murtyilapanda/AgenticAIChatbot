@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace AgenticAIChatbot
             bool useAnd = filters.Count == 1;
 
             string query = CosmosQueryHelper.BuildSqlQuery(filters, useAnd); // OR condition
-            var payload = new
+            Payload payload = new Payload
             {
                 status = "dynamic",
                 query = query
@@ -61,6 +62,13 @@ namespace AgenticAIChatbot
         {
             public List<ShipmentRecord> ShipmentList { get; set; } = new();
             public bool Success { get; set; }
+        }  
+
+        public class Payload
+        {
+            public string? status { get; set; }
+            public string? query { get; set; }
+
         }
 
     }
