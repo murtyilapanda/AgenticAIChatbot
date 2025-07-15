@@ -174,12 +174,19 @@ public class SlaPredictionPlugin
 
     private int? ExtractRiskScore(JsonObject shipment, string mode)
     {
-        return mode switch
-        {
-            "Air" => int.TryParse(shipment["airRisk"]?.ToString(), out var air) ? air : null,
-            "Ocean" => int.TryParse(shipment["oceanRisk"]?.ToString(), out var ocean) ? ocean : null,
-            "Surface" => int.TryParse(shipment["surfaceRisk"]?.ToString(), out var surface) ? surface : null,
-            _ => shipment["shipmentMode"]?.GetValue<string>() == mode && int.TryParse(shipment["portCongestionRiskScore"]?.ToString(), out var portRisk) ? portRisk : (int?)5
-        };
+        if (mode == "Air" && shipment["airRisk"] != null)
+            return double.TryParse(shipment["airRisk"]?.ToString(), out double airRisk) ? (int)Math.Round(airRisk) : null;
+        else if (mode == "Ocean" && shipment["oceanRisk"] != null)
+            return double.TryParse(shipment["oceanRisk"]?.ToString(), out double oceanRisk) ? (int)Math.Round(oceanRisk) : null;
+        else if (mode == "Surface" && shipment["surfaceRisk"] != null)
+            return double.TryParse(shipment["surfaceRisk"]?.ToString(), out double surfaceRisk) ? (int)Math.Round(surfaceRisk) : null;
+
+        if (shipment["shipmentMode"]?.GetValue<string>() == mode && shipment["portCongestionRiskScore"] != null)
+            return double.TryParse(shipment["portCongestionRiskScore"]?.ToString(), out double portRisk) ? (int)Math.Round(portRisk) : null;
+
+        if (mode == shipment["shipmentMode"]?.GetValue<string>())
+            return 5;
+
+        return 0;
     }
 }

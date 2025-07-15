@@ -27,7 +27,9 @@ public class CosmosDbPlugin
         var response = await _httpClient.PostAsync(_getShipmentsEndpoint, content);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadAsStringAsync();
+        var shipmentsJson = await response.Content.ReadAsStringAsync();
+
+        return FilterOutDeliveredShipments(shipmentsJson);
     }
 
     [KernelFunction]
@@ -44,7 +46,8 @@ public class CosmosDbPlugin
         response.EnsureSuccessStatusCode();
 
         var shipmentsJson = await response.Content.ReadAsStringAsync();
-        using var document = JsonDocument.Parse(shipmentsJson);
+        var finalJson = FilterOutDeliveredShipments(shipmentsJson);
+        using var document = JsonDocument.Parse(finalJson);
         var root = document.RootElement;
 
         if (!root.TryGetProperty("shipmentList", out var shipmentList) || shipmentList.ValueKind != JsonValueKind.Array)
@@ -125,5 +128,38 @@ public class CosmosDbPlugin
         }
 
         return (null, null);
+    }
+
+    private string FilterOutDeliveredShipments(string shipmentsJson)
+    {
+        using var document = JsonDocument.Parse(shipmentsJson);
+        var root = document.RootElement;
+
+        if (!root.TryGetProperty("shipmentList", out var shipmentList) || shipmentList.ValueKind != JsonValueKind.Array)
+        {
+            return shipmentsJson;
+        }
+
+        var filteredShipments = new JsonArray();
+
+        foreach (var shipment in shipmentList.EnumerateArray())
+        {
+            if (shipment.TryGetProperty("milestoneStatus", out var milestoneStatus) &&
+                milestoneStatus.ValueKind == JsonValueKind.String &&
+                milestoneStatus.GetString().Equals("DELIVERED", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            JsonObject filteredShipment = JsonSerializer.Deserialize<JsonObject>(shipment.GetRawText());
+            filteredShipments.Add(filteredShipment);
+        }
+
+        var resultObject = new JsonObject
+        {
+            ["shipmentList"] = filteredShipments
+        };
+
+        return resultObject.ToJsonString();
     }
 }

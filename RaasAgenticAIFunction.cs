@@ -74,8 +74,7 @@ namespace AgenticAIChatbot
                             var summary = await _slaQueryService.GetShipmentSummaryAsync(data?.message);
                             return new OkObjectResult(new
                             {
-                                message = "SLA summary generated successfully.",
-                                summary = summary
+                                message = summary,
                             });
                         }
                         catch (Exception ex)
@@ -166,18 +165,14 @@ namespace AgenticAIChatbot
 
                             return new OkObjectResult(new
                             {
-                                message = $"Fetched {shipments.Count} shipment record(s)",
-                                shipments = shipments,
-                                riskAssessment = riskSummary
+                                message = riskSummary
                             });
                         }
 
                     default:
                         return new OkObjectResult(new
                         {
-                            message = "Hi! I can help you with shipment details or SLA-related queries. Try asking something like:\n" +
-                                      "- 'Show me delayed shipments to New York'\n" +
-                                      "- 'Which shipments might miss SLA this week?'"
+                            message = "Hi! I can help you with shipment details or SLA-related queries."
                         });
 
                 }
